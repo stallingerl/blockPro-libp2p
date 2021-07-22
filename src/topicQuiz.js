@@ -23,14 +23,18 @@ export async function topicQuiz(node, id) {
         console.log('array: ' + receivedNumbers.toString())
     })
 
-    setInterval (() => {
+    setInterval(() => {
 
-    await publishRandomNumber(node)
+        // generate a random number 
+        let randomNumber = Math.floor(Math.random() * 100).toString();
+        console.log('Random number: ' + randomNumber)
 
-    let arrayZaehler = await topicZaehlerstand(node)
+        await publishRandomNumber(node, randomNumber)
 
-    await determineWinner(arrayZaehler)
+        let arrayZaehler = await topicZaehlerstand(node)
 
-    },900000)
+        await determineWinner(receivedNumbers)
+
+    }, 900000)
 
 }
