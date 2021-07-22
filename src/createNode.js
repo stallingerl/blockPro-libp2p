@@ -7,31 +7,29 @@ const Bootstrap = require('libp2p-bootstrap')
 const bootstrapers = require('./peerIds/bootstrapers.js')
 
 
-export function createNode(id) 
-{ async (peerId) => {
-    const node = await Libp2p.create({
-      addresses: {
-        listen: ['/ip4/0.0.0.0/tcp/15000']
-      },
-      modules: {
-        transport: [TCP],
-        streamMuxer: [Mplex],
-        connEncryption: [NOISE],
-        pubsub: Gossipsub,
-        peerDiscovery: [Bootstrap]
-      },
-      config: {
-        peerDiscovery: {
-          bootstrap: {
-            interval: 60e3,
-            enabled: true,
-            list: bootstrapers
-          }
+export async function createNode(id) {
+  const node = await Libp2p.create({
+    addresses: {
+      listen: ['/ip4/0.0.0.0/tcp/15000']
+    },
+    modules: {
+      transport: [TCP],
+      streamMuxer: [Mplex],
+      connEncryption: [NOISE],
+      pubsub: Gossipsub,
+      peerDiscovery: [Bootstrap]
+    },
+    config: {
+      peerDiscovery: {
+        bootstrap: {
+          interval: 60e3,
+          enabled: true,
+          list: bootstrapers
         }
-      },
-      peerId: peerId
-    })
+      }
+    },
+    peerId: id
+  })
 
-    return node
-  }
+  return node
 }
