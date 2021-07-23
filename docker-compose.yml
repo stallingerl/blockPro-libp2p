@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    working_dir: /
+    working_dir: /blockPro-libp2p
     image: "stallingerl/libp2p-echo-example:0.0.6"
     hostname: peer1
     volumes:
@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    working_dir: /
+    working_dir: /blockPro-libp2p
     image: "stallingerl/libp2p-echo-example:0.0.6"
     hostname: peer2
     volumes:
@@ -43,7 +43,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    working_dir: /
+    working_dir: /blockPro-libp2p
     image: "stallingerl/libp2p-echo-example:0.0.6"
     hostname: peer3
     volumes:
