@@ -7,7 +7,7 @@ const Bootstrap = require('libp2p-bootstrap')
 const bootstrapers = require('./peerIds/bootstrapers.js')
 
 
-export async function createNode(id) {
+async function createNode(id) {
   const node = await Libp2p.create({
     addresses: {
       listen: ['/ip4/0.0.0.0/tcp/15000']
@@ -33,3 +33,5 @@ export async function createNode(id) {
 
   return node
 }
+
+module.exports.createNode = createNode;

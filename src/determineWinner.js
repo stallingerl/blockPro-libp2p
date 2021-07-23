@@ -1,4 +1,5 @@
-export async function determineWinner(receivedNumbers, solutionNumber) {
+
+async function determineWinner(receivedNumbers, solutionNumber) {
 
   let winnerPeerId
   let diff
@@ -16,3 +17,5 @@ export async function determineWinner(receivedNumbers, solutionNumber) {
   return winnerPeerId
 
 }
+
+module.exports.determineWinner = determineWinner;

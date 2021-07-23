@@ -1,5 +1,5 @@
 
-export async function topicZaehlerstand(node){
+async function topicZaehlerstand(node){
 
     let topic = 'Zaehlerstand'
 
@@ -26,3 +26,5 @@ export async function topicZaehlerstand(node){
     return receivedZaehlerdata
 
 }
+
+module.exports.topicZaehlerstand = topicZaehlerstand;

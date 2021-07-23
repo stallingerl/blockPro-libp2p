@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-export async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
+async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
 
     let timestamp = new Date.toUTCString()
 
@@ -15,4 +15,5 @@ export async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) 
     }
 
 }
+module.exports.writeWinnerToLog = writeWinnerToLog;
 

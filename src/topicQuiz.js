@@ -5,7 +5,7 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 
 const topicZaehlerstand = require('./topicZaehlerstand.js')
 
-export async function topicQuiz(node, id) {
+async function topicQuiz(node, id) {
 
     let topic = "Quiz"
 
@@ -50,3 +50,5 @@ export async function topicQuiz(node, id) {
         let arrayZaehler = await topicZaehlerstand(node)
 
 }
+
+module.exports.topicQuiz = topicQuiz;

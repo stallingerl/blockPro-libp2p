@@ -1,5 +1,5 @@
 
-export async function peerDiscovery(node) {
+async function peerDiscovery(node) {
 
     // Which peers are discovered?
     node.on('peer:discovery', (peerId) => {
@@ -24,5 +24,6 @@ export async function peerDiscovery(node) {
     console.log("node multiaddr: " + node.multiaddrs)
 
     return(node)
-
 }
+
+module.exports.peerDiscovery = peerDiscovery;

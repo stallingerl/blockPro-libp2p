@@ -2,7 +2,7 @@ const fs = require('fs');
 const PeerId = require('peer-id')
 
 
-export async function createOrReadPeerId() {
+async function createOrReadPeerId() {
 
   let peerIdConf = './peerIds/.id.json'
   let peerId
@@ -21,4 +21,6 @@ export async function createOrReadPeerId() {
   }
   return peerId
 }
+module.exports.createOrReadPeerId = createOrReadPeerId;
+
 
