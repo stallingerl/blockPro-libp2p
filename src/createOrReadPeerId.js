@@ -17,7 +17,7 @@ async function createOrReadPeerId() {
     console.warn(`Couldn't read peer id from ${peerIdConf}. Create new peerId`)
     peerId = await PeerId.create({ bits: 1024, keyType: 'RSA' });
     console.log(JSON.stringify(peerId.toJSON(), null, 2))
-    fs.writeFileSync('.id.json', JSON.stringify(peerId));
+    fs.writeFileSync(peerIdConf, JSON.stringify(peerId));
   }
   return peerId
 }
