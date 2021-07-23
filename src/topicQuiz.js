@@ -1,9 +1,8 @@
-import { determineWinner } from './determineWinner.js';
-import { publishRandomNumber } from './publishRandomNumber.js';
-import { writeWinnerToLog } from './writeWinnerToLog.js';
+const { determineWinner } =  require('./determineWinner.js');
+const { publishRandomNumber } = require('./publishRandomNumber.js');
+const { writeWinnerToLog } = require('./writeWinnerToLog.js');
+const { topicZaehlerstand } = require('./topicZaehlerstand.js')
 const uint8ArrayToString = require('uint8arrays/to-string')
-
-const topicZaehlerstand = require('./topicZaehlerstand.js')
 
 async function topicQuiz(node, id) {
 
@@ -45,7 +44,7 @@ async function topicQuiz(node, id) {
         let randomNumber = Math.floor(Math.random() * 100).toString();
         console.log('Random number: ' + randomNumber)
 
-        await publishRandomNumber(node, radomNumber, id)
+        await publishRandomNumber(node, randomNumber, id, topic)
 
         let arrayZaehler = await topicZaehlerstand(node)
 

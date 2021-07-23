@@ -6,7 +6,7 @@ const topicZaehlerstand = require('./topicZaehlerstand.js')
 
 // This function is for the Quizmaster who sets the hidden number
 
-async function topicQuiz(node, id) {
+async function seedQuiz(node, id) {
 
     let topic = "Quiz"
 
@@ -34,7 +34,7 @@ async function topicQuiz(node, id) {
 
     sleep(900000);
 
-    await publishRandomNumber(node, randomNumber, id)
+    await publishRandomNumber(node, randomNumber, id, topic)
 
     winnerPeerId = await determineWinner(receivedNumbers, randomNumber)
     console.log("Winner PeerId: " + winnerPeerId)
@@ -47,4 +47,4 @@ async function topicQuiz(node, id) {
 
 }
 
-module.exports.topicQuiz = topicQuiz;
+module.exports.topicQuiz = seedQuiz;
