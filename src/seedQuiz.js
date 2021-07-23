@@ -29,10 +29,12 @@ export async function topicQuiz(node, id) {
     let randomNumber = 'Solution ' + Math.floor(Math.random() * 100).toString();
     console.log('Random number: ' + randomNumber)
 
+    // send and receive meter data
+    let arrayZaehler = await topicZaehlerstand(node)
+
     sleep(900000);
 
     await publishRandomNumber(node, randomNumber, id)
-
 
     winnerPeerId = await determineWinner(receivedNumbers, randomNumber)
     console.log("Winner PeerId: " + winnerPeerId)
@@ -41,11 +43,6 @@ export async function topicQuiz(node, id) {
     } else if (iteration == undefined) {
         iteration = 0
     }
-    await writeWinnerToLog(id, winnerPeerId)
-
-
-    let arrayZaehler = await topicZaehlerstand(node)
-
-    await determineWinner(receivedNumbers, randomNumber)
+    await writeWinnerToLog(iteration, winnerPeerId, randomNumber)
 
 }

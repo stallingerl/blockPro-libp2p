@@ -1,9 +1,18 @@
 const fs = require('fs');
 
-export async function writeWinnerToLog(){
+export async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
 
-fs.writeFileSync('winnerLog.txt', JSON.stringify(peerId));
+    let timestamp = new Date.toUTCString()
 
+    try {
+        var data = fs.readFileSync('winnerLog.txt', 'utf8');
+        data.concat(`${iteration}, ${timestamp}, ${winnerPeerId}, ${solutionNumber}, `)
+        fs.writeFileSync('winnerLog.txt', data);
+    } catch (e) {
+        console.log('Creating new Logfile');
+        let data = `${iteration}, ${timestamp}, ${winnerPeerId}, ${solutionNumber}, `
+        fs.writeFileSync('winnerLog.txt', data);
+    }
 
 }
 
