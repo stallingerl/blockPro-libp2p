@@ -1,8 +1,8 @@
-import { determineWinner } from './determineWinner.js';
-import { publishRandomNumber } from './publishRandomNumber.js';
-const uint8ArrayToString = require('uint8arrays/to-string')
+const { determineWinner } = require('./determineWinner.js');
+const { publishRandomNumber } = require('./publishRandomNumber.js');
+const   uint8ArrayToString = require('uint8arrays/to-string')
 
-const topicZaehlerstand = require('./topicZaehlerstand.js')
+const { topicZaehlerstand } = require('./topicZaehlerstand.js')
 
 // This function is for the Quizmaster who sets the hidden number
 
@@ -47,4 +47,4 @@ async function seedQuiz(node, id) {
 
 }
 
-module.exports.topicQuiz = seedQuiz;
+module.exports.seedQuiz = seedQuiz;

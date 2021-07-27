@@ -132,6 +132,7 @@
     "retimer": "^3.0.0",
     "sanitize-filename": "^1.6.3",
     "set-delayed-interval": "^1.0.0",
+    "sleep-promise": "^9.1.0",
     "streaming-iterables": "^6.0.0",
     "timeout-abort-controller": "^1.1.1",
     "trim-newlines": "^4.0.2",
