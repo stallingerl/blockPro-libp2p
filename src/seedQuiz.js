@@ -1,6 +1,7 @@
 const { determineWinner } = require('./determineWinner.js');
 const { publishRandomNumber } = require('./publishRandomNumber.js');
 const   uint8ArrayToString = require('uint8arrays/to-string')
+const sleep = require('sleep-promise')
 
 const { topicZaehlerstand } = require('./topicZaehlerstand.js')
 
