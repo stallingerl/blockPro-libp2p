@@ -7,8 +7,12 @@
 4. connect to peer1 ```docker-compose exec peer1 bash```and run from /js-libp2p/examples/pubsub ```node listener1.js```
 5. connect to peer2 ```docker-compose exec peer1 bash``` and run from /js-libp2p/examples/pubsub ```node listener2.js```
 6. connect to peer3 ```docker-compose exec peer3 bash``` and run from /js-libp2p/examples/pubsub ```node listener3.js```
-7. in each peer container run
-```npm start```
+7. in container peer1 run
+    ```npm run peer1```
+   in container peer2 run
+   ```npm run peer2```
+   in container peer3 run
+   ```npm run peer3```
 
 
 ## Offene Fragen

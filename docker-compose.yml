@@ -9,7 +9,7 @@ services:
     hostname: peer1
     volumes:
       - .:/blockPro-libp2p
-    #command: bash -c "node listener.js"
+    #command: bash -c "npm run start1"
     container_name: peer1
     ports:
       - "8337:8337"
@@ -28,7 +28,7 @@ services:
     hostname: peer2
     volumes:
       - .:/blockPro-libp2p
-    #command: bash -c "node listener2.js"
+    #command: bash -c "npm run start2"
     container_name: peer2
     ports:
       - "8338:8338"
@@ -48,7 +48,7 @@ services:
     hostname: peer3
     volumes:
       - .:/blockPro-libp2p
-    #command: bash -c "node dialer.js"
+    #command: bash -c "npm run start3"
     container_name: peer3
     ports:
     - "8339:8339"

@@ -2,9 +2,8 @@ const fs = require('fs');
 const PeerId = require('peer-id')
 
 
-async function createOrReadPeerId() {
+async function createOrReadPeerId(peerIdConf) {
 
-  let peerIdConf = './peerIds/.id.json'
   let peerId
 
   try {
