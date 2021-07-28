@@ -9,7 +9,7 @@ const { writeWinnerToLog } = require('./writeWinnerToLog.js')
 
 // This function is for the Quizmaster who sets the hidden number
 
-async function seedQuiz(node, id) {
+async function seedQuiz(node, id, iteration) {
 
     let topic = "Quiz"
 
@@ -18,7 +18,6 @@ async function seedQuiz(node, id) {
 
     let receivedNumbers = [];
     let winnerPeerId
-    let iteration
 
     // receive other peers' numbers and save to Array receivedNumbers
     node.pubsub.on(topic, async (msg) => {
@@ -49,17 +48,13 @@ async function seedQuiz(node, id) {
             winnerPeerId = id
         }
         console.log("Winner PeerId: " + winnerPeerId)
-        if (iteration !== undefined) {
-            iteration = ++iteration
-        } else if (iteration == undefined) {
-            iteration = 0
-        }
+
         await writeWinnerToLog(iteration, winnerPeerId, randomNumber)
 
         if (winnerPeerId == id){
-            await seedQuiz(node, id)
+            await seedQuiz(node, id, ++iteration)
         } else {
-            await topicQuiz(node, id)
+            await topicQuiz(node, id, ++iteration)
         }
 
     });

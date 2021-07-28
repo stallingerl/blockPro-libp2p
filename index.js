@@ -17,11 +17,13 @@ async function main () {
   node = await peerDiscovery(node)
 
   id = id.toB58String()
+
+  let iteration = 0;
   
   if(peerIdConf.includes('id-1')){
-    await seedQuiz(node, id)
+    await seedQuiz(node, id, iteration)
   }else{
-    await topicQuiz(node, id)
+    await topicQuiz(node, id, iteration)
   }
 
 }

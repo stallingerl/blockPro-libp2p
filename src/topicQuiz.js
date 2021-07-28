@@ -4,7 +4,7 @@ const { writeWinnerToLog } = require('./writeWinnerToLog.js');
 const { topicZaehlerstand } = require('./topicZaehlerstand.js')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
-async function topicQuiz(node, id) {
+async function topicQuiz(node, id, iteration) {
 
     let topic = "Quiz"
 
@@ -14,7 +14,6 @@ async function topicQuiz(node, id) {
     let receivedNumbers = [];
     let solutionNumber 
     let winnerPeerId
-    let iteration
 
     // receive other peers' numbers and save to Array receivedNumbers
     node.pubsub.on(topic, async (msg) => {
@@ -25,11 +24,7 @@ async function topicQuiz(node, id) {
             solutionNumber = message.split(' ')[1];;
             winnerPeerId = await determineWinner(receivedNumbers, solutionNumber)
             console.log("Winner PeerId: " + winnerPeerId)
-            if (iteration !== undefined){
-                iteration = ++iteration
-            }else if(iteration == undefined) {
-                iteration = 0
-            }
+
             await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
         }
 

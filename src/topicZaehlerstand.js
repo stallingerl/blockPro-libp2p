@@ -1,6 +1,6 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
-async function topicZaehlerstand(node){
+async function topicZaehlerstand(node, id, iteration){
 
     let topic = 'Zaehlerstand'
 
