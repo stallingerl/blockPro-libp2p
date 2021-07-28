@@ -43,7 +43,7 @@ async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
     }
 
     const csvFile = new CsvFile({
-        path: path.resolve(__dirname, '../winnerBlockchain.csv'),
+        path: path.resolve(__dirname, process.env.LOG),
         // headers to write
         headers: ['index', 'timestamp', 'winnerPeerId', 'solutionNumber'],
     });

@@ -19,6 +19,9 @@ async function seedQuiz(node, id, iteration) {
     let receivedNumbers = [];
     let winnerPeerId
 
+    // send and receive meter data
+    // let arrayZaehler = await topicZaehlerstand(node, id)
+
     // receive other peers' numbers and save to Array receivedNumbers
     node.pubsub.on(topic, async (msg) => {
         let data = await msg.data
@@ -33,10 +36,7 @@ async function seedQuiz(node, id, iteration) {
     let randomNumber = 'Solution ' + Math.floor(Math.random() * 100).toString();
     console.log('Random number: ' + randomNumber)
 
-    // send and receive meter data
-    let arrayZaehler = await topicZaehlerstand(node)
-
-    sleep(5000).then(async function () {
+    sleep(60000).then(async function () {
         console.log('15 mins later …');
 
         await publishRandomNumber(node, randomNumber, id, topic)
@@ -47,6 +47,7 @@ async function seedQuiz(node, id, iteration) {
         if (winnerPeerId == undefined){
             winnerPeerId = id
         }
+        
         console.log("Winner PeerId: " + winnerPeerId)
 
         await writeWinnerToLog(iteration, winnerPeerId, randomNumber)
