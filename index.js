@@ -10,11 +10,13 @@ async function main () {
 
   peerIdConf = process.env.PEER;
 
-  const id = await createOrReadPeerId(peerIdConf)
+  var id = await createOrReadPeerId(peerIdConf)
 
   var node = await createNode(id)
 
   node = await peerDiscovery(node)
+
+  id = id.toB58String()
   
   if(peerIdConf.includes('id-1')){
     await seedQuiz(node, id)

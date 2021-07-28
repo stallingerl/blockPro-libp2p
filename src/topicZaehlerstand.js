@@ -1,3 +1,4 @@
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 async function topicZaehlerstand(node){
 
@@ -21,7 +22,7 @@ async function topicZaehlerstand(node){
     // publish own meter data to other peers every 15 mins
     setInterval(() => {
         node.pubsub.publish(topic, uint8ArrayFromString('Node 1 sagt: Ich bin der Seed-Node!'))
-    }, 900000)
+    }, 5000)
 
     return receivedZaehlerdata
 

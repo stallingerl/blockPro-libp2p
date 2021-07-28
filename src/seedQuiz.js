@@ -1,9 +1,11 @@
 const { determineWinner } = require('./determineWinner.js');
 const { publishRandomNumber } = require('./publishRandomNumber.js');
-const   uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 const sleep = require('sleep-promise')
 
-const { topicZaehlerstand } = require('./topicZaehlerstand.js')
+const { topicZaehlerstand } = require('./topicZaehlerstand.js');
+const { topicQuiz } = require('./topicQuiz.js');
+const { writeWinnerToLog } = require('./writeWinnerToLog.js')
 
 // This function is for the Quizmaster who sets the hidden number
 
@@ -15,6 +17,8 @@ async function seedQuiz(node, id) {
     await node.pubsub.subscribe(topic)
 
     let receivedNumbers = [];
+    let winnerPeerId
+    let iteration
 
     // receive other peers' numbers and save to Array receivedNumbers
     node.pubsub.on(topic, async (msg) => {
@@ -33,18 +37,32 @@ async function seedQuiz(node, id) {
     // send and receive meter data
     let arrayZaehler = await topicZaehlerstand(node)
 
-    sleep(900000);
+    sleep(5000).then(async function () {
+        console.log('15 mins later …');
 
-    await publishRandomNumber(node, randomNumber, id, topic)
+        await publishRandomNumber(node, randomNumber, id, topic)
 
-    winnerPeerId = await determineWinner(receivedNumbers, randomNumber)
-    console.log("Winner PeerId: " + winnerPeerId)
-    if (iteration !== undefined) {
-        iteration = ++iteration
-    } else if (iteration == undefined) {
-        iteration = 0
-    }
-    await writeWinnerToLog(iteration, winnerPeerId, randomNumber)
+        winnerPeerId = await determineWinner(receivedNumbers, randomNumber)
+
+        // lacking other peers self is the winner
+        if (winnerPeerId == undefined){
+            winnerPeerId = id
+        }
+        console.log("Winner PeerId: " + winnerPeerId)
+        if (iteration !== undefined) {
+            iteration = ++iteration
+        } else if (iteration == undefined) {
+            iteration = 0
+        }
+        await writeWinnerToLog(iteration, winnerPeerId, randomNumber)
+
+        if (winnerPeerId == id){
+            await seedQuiz(node, id)
+        } else {
+            await topicQuiz(node, id)
+        }
+
+    });
 
 }
 

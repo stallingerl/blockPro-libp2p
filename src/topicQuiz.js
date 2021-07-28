@@ -15,7 +15,6 @@ async function topicQuiz(node, id) {
     let solutionNumber 
     let winnerPeerId
     let iteration
-    id = id.toJSON().id
 
     // receive other peers' numbers and save to Array receivedNumbers
     node.pubsub.on(topic, async (msg) => {
@@ -23,7 +22,7 @@ async function topicQuiz(node, id) {
         let message = uint8ArrayToString(data)
 
         if(message.includes('Solution')){
-            solutionNumber = message.substr(1,message.indexOf('Solution '));
+            solutionNumber = message.split(' ')[1];;
             winnerPeerId = await determineWinner(receivedNumbers, solutionNumber)
             console.log("Winner PeerId: " + winnerPeerId)
             if (iteration !== undefined){
