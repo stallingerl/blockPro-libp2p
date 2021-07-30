@@ -2,6 +2,7 @@ const { determineWinner } = require('./determineWinner.js');
 const { publishRandomNumber } = require('./publishRandomNumber.js');
 const { writeWinnerToLog } = require('./writeWinnerToLog.js');
 const { topicZaehlerstand } = require('./topicZaehlerstand.js')
+const { seedQuiz } = require('./seedQuiz.js')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
 async function topicQuiz(node, id, iteration) {
@@ -29,11 +30,17 @@ async function topicQuiz(node, id, iteration) {
         let message = uint8ArrayToString(data)
 
         if (message.includes('Solution')) {
-            solutionNumber = message.split(' ')[1];;
+
+            // auch die eigene Nummer muss mit gegeben werden
+            receivedNumbers.push(`${id}, ${randomNumber}`)
+            solutionNumber = message.split('Solution ')[1];
             winnerPeerId = await determineWinner(receivedNumbers, solutionNumber)
-            console.log("Winner PeerId: " + winnerPeerId)
+            console.log("Winner PeerId and Solution number: " + winnerPeerId + solutionNumber)
+
+            if (winnerPeerId !== undefined){
 
             await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+            }
 
             if (winnerPeerId == id) {
                 await seedQuiz(node, id, ++iteration)

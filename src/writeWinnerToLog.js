@@ -6,8 +6,7 @@ const csv = require('@fast-csv/format');
 
 async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
 
-    let timestamp = new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
-    solutionNumber = solutionNumber.split(' ')[1];
+    let timestamp = new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" })
 
     class CsvFile {
         static write(filestream, rows, options) {
@@ -54,7 +53,7 @@ async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
         // 1. create the csv
         csvFile
             .create([
-                { index: `${iteration}`, timestamp: `${timestamp}`, winnerPeerId: `${winnerPeerId}`, solutionNumber: `${solutionNumber}` },
+                { index: `${iteration}`, timestamp: `${timestamp}`, winnerPeerId: `${winnerPeerId}`, solutionNumber: `${solutionNumber}` }
             ])
             .then(() => csvFile.read())
             .then(contents => {
@@ -69,7 +68,7 @@ async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
             // append rows to file
             .then(() =>
                 csvFile.append([
-                    { index: `${iteration}`, timestamp: `${timestamp}`, winnerPeerId: `${winnerPeerId}`, solutionNumber: `${solutionNumber}` },
+                    { index: `${iteration}`, timestamp: `${timestamp}`, winnerPeerId: `${winnerPeerId}`, solutionNumber: `${solutionNumber}` }
                 ]),
             )
             // append another row

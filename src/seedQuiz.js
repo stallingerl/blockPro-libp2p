@@ -13,6 +13,8 @@ async function seedQuiz(node, id, iteration) {
 
     let topic = "Quiz"
 
+    console.log('I am SEED now ' + id)
+
     // subscribe to topic Quiz
     await node.pubsub.subscribe(topic)
 
