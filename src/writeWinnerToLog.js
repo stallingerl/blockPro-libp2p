@@ -51,7 +51,7 @@ async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
     // 1. Check if csv file exists
     if (content.length == 0) {
         // 1. create the csv
-        csvFile
+        await csvFile
             .create([
                 { index: `${iteration}`, timestamp: `${timestamp}`, winnerPeerId: `${winnerPeerId}`, solutionNumber: `${solutionNumber}` }
             ])
@@ -64,7 +64,7 @@ async function writeWinnerToLog(iteration, winnerPeerId, solutionNumber) {
                 process.exit(1);
             });
     } else {
-        csvFile.read()
+        await csvFile.read()
             // append rows to file
             .then(() =>
                 csvFile.append([

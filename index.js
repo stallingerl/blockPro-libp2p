@@ -1,30 +1,57 @@
 const { createOrReadPeerId } = require('./src/createOrReadPeerId')
-const  { createNode } = require('./src/createNode.js')
+const { createNode } = require('./src/createNode.js')
 const { peerDiscovery } = require('./src/peerDiscovery.js')
 const { topicQuiz } = require('./src/topicQuiz.js')
 const { seedQuiz } = require('./src/seedQuiz.js')
 
-async function main () {
+var peerIdConf
+var id
+var node
+var iteration
+var winnerPeerId
 
-  let peerIdConf
+async function main() {
 
   peerIdConf = process.env.PEER;
 
-  var id = await createOrReadPeerId(peerIdConf)
+  id = await createOrReadPeerId(peerIdConf)
 
-  var node = await createNode(id)
+  node = await createNode(id)
 
-  node = await peerDiscovery(node)
+  await peerDiscovery(node)
 
   id = id.toB58String()
 
-  let iteration = 0;
+  iteration = 0;
+
+  await getWinnerPeerId()
+
+  await startNextQuiz(winnerPeerId)
   
-  if(peerIdConf.includes('id-1')){
-    await seedQuiz(node, id, iteration)
-  }else{
-    await topicQuiz(node, id, iteration)
+
+  async function getWinnerPeerId() {
+    if (peerIdConf.includes('id-1')) {
+      winnerPeerId = await seedQuiz(node, id, iteration)
+      console.log("Gewinner ist ", winnerPeerId)
+    } else {
+      winnerPeerId = await topicQuiz(node, id, iteration)
+    }
+    console.log("Hallo aus getWinnerid  ", winnerPeerId)
   }
+
+  async function startNextQuiz(winnerPeerId){
+  while (winnerPeerId !== undefined) {
+    console.log('inside  start next quiz ', winnerPeerId)
+    if (winnerPeerId == id) {
+      console.log('Ende von Runde. Nächste Runde ausgelöst')
+      winnerPeerId = await seedQuiz(node, id, ++iteration)
+    } else {
+      console.log('Ende von Runde. Nächste Runde ausgelöst')
+      winnerPeerId = await topicQuiz(node, id, ++iteration)
+    }
+  }
+
+}
 
 }
 

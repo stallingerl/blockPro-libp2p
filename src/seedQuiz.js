@@ -1,13 +1,16 @@
 const { determineWinner } = require('./determineWinner.js');
 const { publishRandomNumber } = require('./publishRandomNumber.js');
 const uint8ArrayToString = require('uint8arrays/to-string')
-const sleep = require('sleep-promise')
-
 const { topicZaehlerstand } = require('./topicZaehlerstand.js');
-const { topicQuiz } = require('./topicQuiz.js');
 const { writeWinnerToLog } = require('./writeWinnerToLog.js')
 
 // This function is for the Quizmaster who sets the hidden number
+var receivedNumbers = [];
+var winnerPeerId
+var node
+var id
+var solutionNumber
+var solution
 
 async function seedQuiz(node, id, iteration) {
 
@@ -18,49 +21,47 @@ async function seedQuiz(node, id, iteration) {
     // subscribe to topic Quiz
     await node.pubsub.subscribe(topic)
 
-    let receivedNumbers = [];
-    let winnerPeerId
 
     // send and receive meter data
     // let arrayZaehler = await topicZaehlerstand(node, id)
 
     // receive other peers' numbers and save to Array receivedNumbers
-    node.pubsub.on(topic, async (msg) => {
+    await node.pubsub.on(topic, async (msg) => {
         let data = await msg.data
         let message = uint8ArrayToString(data)
-        console.log('received message: ' + message)
 
+        console.log('received message: ' + message)
         receivedNumbers.push(message)
-        console.log('array: ' + receivedNumbers.toString())
     })
 
     // generate a random number 
-    let randomNumber = 'Solution ' + Math.floor(Math.random() * 100).toString();
-    console.log('Random number: ' + randomNumber)
+    solutionNumber = Math.floor(Math.random() * 100).toString();
+    solution = 'Solution ' + solutionNumber
+    console.log('Random number: ' + solution)
 
-    sleep(60000).then(async function () {
+    // sleep until it's time to publish Solution
+    let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    await sleep(5000)
+
+    await publishSolution()
+
+    async function publishSolution() {
         console.log('15 mins later …');
 
-        await publishRandomNumber(node, randomNumber, id, topic)
+        await publishRandomNumber(node, solution, id, topic)
+        console.log('Hallo dies ist im TIMEOUT ', JSON.stringify(receivedNumbers))
 
-        winnerPeerId = await determineWinner(receivedNumbers, randomNumber)
+        winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
 
-        // lacking other peers self is the winner
-        if (winnerPeerId == undefined){
+        if (winnerPeerId == undefined) {
+            console.log('KEINE MITSPIELER GEFUNDEN')
             winnerPeerId = id
         }
-        
-        console.log("Winner PeerId: " + winnerPeerId)
 
-        await writeWinnerToLog(iteration, winnerPeerId, randomNumber)
+    }
 
-        if (winnerPeerId == id){
-            await seedQuiz(node, id, ++iteration)
-        } else {
-            await topicQuiz(node, id, ++iteration)
-        }
-
-    });
+    await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+    return winnerPeerId
 
 }
 

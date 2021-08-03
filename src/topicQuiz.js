@@ -2,8 +2,11 @@ const { determineWinner } = require('./determineWinner.js');
 const { publishRandomNumber } = require('./publishRandomNumber.js');
 const { writeWinnerToLog } = require('./writeWinnerToLog.js');
 const { topicZaehlerstand } = require('./topicZaehlerstand.js')
-const { seedQuiz } = require('./seedQuiz.js')
 const uint8ArrayToString = require('uint8arrays/to-string')
+
+let receivedNumbers = [];
+let solutionNumber
+let winnerPeerId
 
 async function topicQuiz(node, id, iteration) {
 
@@ -11,10 +14,6 @@ async function topicQuiz(node, id, iteration) {
 
     // subscribe to topic Quiz
     await node.pubsub.subscribe(topic)
-
-    let receivedNumbers = [];
-    let solutionNumber
-    let winnerPeerId
 
     // let arrayZaehler = await topicZaehlerstand(node, id)
 
@@ -33,26 +32,20 @@ async function topicQuiz(node, id, iteration) {
 
             // auch die eigene Nummer muss mit gegeben werden
             receivedNumbers.push(`${id}, ${randomNumber}`)
+
             solutionNumber = message.split('Solution ')[1];
-            winnerPeerId = await determineWinner(receivedNumbers, solutionNumber)
-            console.log("Winner PeerId and Solution number: " + winnerPeerId + solutionNumber)
+            winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
 
-            if (winnerPeerId !== undefined){
 
-            await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-            }
+            if (winnerPeerId !== undefined) {
+                console.log("Winner PeerId and Solution number: " + winnerPeerId + solutionNumber)
 
-            if (winnerPeerId == id) {
-                await seedQuiz(node, id, ++iteration)
-            } else {
-                await topicQuiz(node, id, ++iteration)
+                await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
             }
         }
 
         console.log('received message: ' + message)
-
         receivedNumbers.push(message)
-       // console.log('ReceivedNumbers: ' + receivedNumbers.toString())
     })
 
 }
