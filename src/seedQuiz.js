@@ -41,7 +41,7 @@ async function seedQuiz(node, id, iteration) {
 
     // sleep until it's time to publish Solution
     let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-    await sleep(5000)
+    await sleep(30000)
 
     await publishSolution()
 

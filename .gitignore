@@ -5,9 +5,9 @@ test/repo-tests*
 **/bundle.js
 .cache
 .parcel-cache
-./winnerBlockchain1.csv
-./winnerBlockchain2.csv
-./winnerBlockchain3.csv
+winnerBlockchain1.csv
+winnerBlockchain2.csv
+winnerBlockchain3.csv
 
 # Logs
 logs

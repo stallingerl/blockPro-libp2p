@@ -31,9 +31,16 @@ async function topicQuiz(node, id, iteration) {
         if (message.includes('Solution')) {
 
             // auch die eigene Nummer muss mit gegeben werden
-            receivedNumbers.push(`${id}, ${randomNumber}`)
+            if (!receivedNumbers.includes(`${id}, ${randomNumber}`)) {
+                receivedNumbers.push(`${id}, ${randomNumber}`)
+            }
+
+            //receivedNumbers.push('QmdaiadqcBDCoJ43A5gaomqzUR7dH1NgrGK1xUkUPPkjUi, 50')
+            //receivedNumbers.push('QmUkf9pfefP2F55GJ7G9WjqQwpJR5rZTKqSthCMcmxNF1m, Solution 60')
+
 
             solutionNumber = message.split('Solution ')[1];
+            //solutionNumber = 40
             winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
 
 
@@ -41,13 +48,16 @@ async function topicQuiz(node, id, iteration) {
                 console.log("Winner PeerId and Solution number: " + winnerPeerId + solutionNumber)
 
                 await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+                return winnerPeerId
             }
         }
-
+        
         console.log('received message: ' + message)
-        receivedNumbers.push(message)
-    })
 
+        if (!receivedNumbers.includes(`${message}`)) {
+            receivedNumbers.push(message)
+        }
+    })
 }
 
 module.exports.topicQuiz = topicQuiz;

@@ -9,8 +9,8 @@ async function determineWinner(receivedNumbers, solutionNumber, id) {
 
   console.log('Hallo dies ist in determine WINNNER: ', JSON.stringify(receivedNumbers))
 
-  if (receivedNumbers !== undefined && receivedNumbers.length !== 0  ) {
-    for (var i = 1; i < receivedNumbers.length; i++) {
+  if (receivedNumbers !== undefined && receivedNumbers.length > 2  ) {
+    for (var i = 0; i < receivedNumbers.length ; i++) {
       if (!receivedNumbers[i].includes('Solution')) {
         console.log('erster Eintrag in array: ' + receivedNumbers[i])
         let number = receivedNumbers[i].split(' ')[1]

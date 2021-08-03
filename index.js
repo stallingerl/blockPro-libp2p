@@ -32,7 +32,6 @@ async function main() {
   async function getWinnerPeerId() {
     if (peerIdConf.includes('id-1')) {
       winnerPeerId = await seedQuiz(node, id, iteration)
-      console.log("Gewinner ist ", winnerPeerId)
     } else {
       winnerPeerId = await topicQuiz(node, id, iteration)
     }
