@@ -1,4 +1,4 @@
-const { parentPort } = require('worker_threads');
+const { isMainThread, parentPort } = require('worker_threads');
 
 (async () =>  {
     return new Promise((resolve) => {
@@ -10,8 +10,9 @@ const { parentPort } = require('worker_threads');
             solutionNumber = Math.floor(Math.random() * 100).toString();
             solution = 'Solution ' + solutionNumber
             console.log('Random number: ' + solution)
+            console.log('Is Main Thread ', isMainThread)
 
-            parentPort.postMessage(solution);
+            parentPort.postMessage(`${solution}`);
             process.exit();
         }, 30000);
     })

@@ -1,5 +1,4 @@
 const uint8ArrayToString = require('uint8arrays/to-string')
-const { listenerThread } = require('./sleep15Minutes.js')
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads')
 const { publishRandomNumber } = require('./publishRandomNumber.js');
 const { determineWinner } = require('./determineWinner.js')
@@ -58,10 +57,11 @@ async function listenForMessages(node, id, topic, iteration) {
 
                 await writeWinnerToLog(iteration, winnerPeerId, solution)
 
+                console.log("Executed in the worker thread");
+
                 return winnerPeerId
             })
 
-            console.log("Executed in the parent thread");
         }
     }
 }
