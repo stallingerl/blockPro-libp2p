@@ -13,4 +13,4 @@
 1. Timing: Ungeschriebene Zählerstände dürfen nicht verloren gehen
 2. Vermeidung von doppelten Einträgen
 3. Überprüfung des verhashten Dokuments (51% Konsens)
-   
+4. Brauchen wir queues für die Zählerstände
