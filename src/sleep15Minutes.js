@@ -1,20 +1,22 @@
 const { isMainThread, parentPort } = require('worker_threads');
+const { publishRandomNumber } = require('./publishRandomNumber.js');
+const { determineWinner } = require('./determineWinner.js')
+const { writeWinnerToLog } = require('./writeWinnerToLog.js');
+const { quiz } = require('./quiz.js');
+
 
 (async () =>  {
-    return new Promise((resolve) => {
         console.log(`Starting wait 15 mins`);
-        setTimeout(() => {
+        setTimeout(async() => {
             console.log(`Timeout over`);
-            resolve();
+
             // generate a random number 
             solutionNumber = Math.floor(Math.random() * 100).toString();
             solution = 'Solution ' + solutionNumber
             console.log('Random number: ' + solution)
-            console.log('Is Main Thread ', isMainThread)
-
             parentPort.postMessage(`${solution}`);
+
             process.exit();
         }, 30000);
-    })
 })();
 

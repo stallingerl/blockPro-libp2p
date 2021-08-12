@@ -1,10 +1,11 @@
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
-var winnerPeerId
+
 async function publishWinner(node, ẃinnerPeerId, topic) {
-        let publishWinner = ('winnerPeerId' + ', ' + winnerPeerId)
+
+        let publishWinner = ('winnerPeerId' + ', ' + ẃinnerPeerId)
         console.log('published winnerPeerId = ' + publishWinner)
         node.pubsub.publish(topic, uint8ArrayFromString(publishWinner))
 
 }
-module.exports.publishWinner = this.publishWinner;
+module.exports.publishWinner = publishWinner;

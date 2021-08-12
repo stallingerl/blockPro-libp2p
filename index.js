@@ -1,14 +1,14 @@
 const { createOrReadPeerId } = require('./src/createOrReadPeerId')
 const { createNode } = require('./src/createNode.js')
 const { peerDiscovery } = require('./src/peerDiscovery.js')
-const { topicQuiz } = require('./src/topicQuiz.js')
-const { signer } = require('./src/signer.js')
+const { quiz } = require('./src/quiz.js')
 
 var peerIdConf
 var id
 var node
 var iteration
 var winnerPeerId
+var signer
 
 async function main() {
 
@@ -26,9 +26,11 @@ async function main() {
 
   async function getWinnerPeerId() {
     if (peerIdConf.includes('id-1')) {
-      winnerPeerId = await signer(node, id, iteration)
+      signer = true
+      await quiz(node, id, signer, iteration)
     } else {
-      winnerPeerId = await topicQuiz(node, id, iteration)
+      signer = false
+      await quiz(node, id, signer, iteration)
     }
   }
 
