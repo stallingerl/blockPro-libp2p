@@ -15,8 +15,8 @@ async function startSleepThread(node, id, iteration, topic) {
     const worker = new Worker('./src/sleep15Minutes.js');
   
     //Listen for a message from worker
-    worker.once("message", async (result) => {
-        solution = await result
+    worker.once("message", (result) => {
+        solution = result
         console.log(`${result}`);
     });
 
@@ -38,13 +38,13 @@ async function startSleepThread(node, id, iteration, topic) {
 
         await writeWinnerToLog(iteration, winnerPeerId, solution)
 
-        await publishWinner(node, winnerPeerId)
+        await publishWinner(node, winnerPeerId, topic)
 
         console.log("Executed in the worker thread");
 
         if (winnerPeerId == id) {
             console.log('Ende von Runde. Nächste Runde ausgelöst')
-            winnerPeerId = await startSleepThread(++iteration)
+            await startSleepThread(node, id, ++iteration, topic)
           } else {
             receivedNumbers = []
             signer = false

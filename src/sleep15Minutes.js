@@ -1,13 +1,9 @@
 const { isMainThread, parentPort } = require('worker_threads');
-const { publishRandomNumber } = require('./publishRandomNumber.js');
-const { determineWinner } = require('./determineWinner.js')
-const { writeWinnerToLog } = require('./writeWinnerToLog.js');
-const { quiz } = require('./quiz.js');
 
 
-(async () =>  {
+( () =>  {
         console.log(`Starting wait 15 mins`);
-        setTimeout(async() => {
+        setTimeout(() => {
             console.log(`Timeout over`);
 
             // generate a random number 

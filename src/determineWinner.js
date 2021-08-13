@@ -7,7 +7,7 @@
 async function determineWinner(receivedNumbers, solutionNumber, id) {
   return new Promise(resolve => {
 
-  console.log('Hallo dies ist in determine WINNNER: ', JSON.stringify(receivedNumbers))
+  console.log('Nummern von Peers empfangen: ', JSON.stringify(receivedNumbers))
 
   if (receivedNumbers !== undefined && receivedNumbers.length > 2  ) {
     for (var i = 0; i < receivedNumbers.length ; i++) {
