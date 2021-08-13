@@ -9,7 +9,7 @@ async function determineWinner(receivedNumbers, solutionNumber, id) {
 
   console.log('Nummern von Peers empfangen: ', JSON.stringify(receivedNumbers))
 
-  if (receivedNumbers !== undefined && receivedNumbers.length > 2  ) {
+  if (receivedNumbers !== undefined && receivedNumbers.length > 1  ) {
     for (var i = 0; i < receivedNumbers.length ; i++) {
       if (!receivedNumbers[i].includes('Solution')) {
         console.log('erster Eintrag in array: ' + receivedNumbers[i])

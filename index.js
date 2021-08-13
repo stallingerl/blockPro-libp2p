@@ -7,7 +7,6 @@ var peerIdConf
 var id
 var node
 var iteration
-var winnerPeerId
 var signer
 
 async function main() {
