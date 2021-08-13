@@ -4,8 +4,6 @@ const uint8ArrayToString = require('uint8arrays/to-string');
 const { determineWinner } = require('./determineWinner.js')
 const { writeWinnerToLog } = require('./writeWinnerToLog.js');
 const { Worker, isMainThread, parentPort, workerData, MessageChannel } = require('worker_threads')
-const { resolve } = require('path');
-
 
 
 // This function is for the Quizmaster who sets the hidden number
@@ -26,16 +24,6 @@ async function quiz(node, id, signer, iteration) {
     // subscribe to topic Quiz
     await node.pubsub.subscribe(topic)
     //global.receivedNumbers = ["QmdaiadqcBDCoJ43A5gaomqzUR7dH1NgrGK1xUkUPPkjUi,50", "Qmbu3GkGhjFxBvS2HVZbRggFdyRjzhY5zyD7Pp6sKoGAPb, Solution 12"]
-
-    // listen for messages
-    await node.pubsub.on(topic, async (msg) => {
-        let data = await msg.data
-        let message = uint8ArrayToString(data)
-
-        console.log('received message: ' + message)
-
-        receivedNumbers.push(message)
-    })
 
     if (signer == true) {
         await startSleepThread(iteration)
@@ -70,42 +58,37 @@ async function quiz(node, id, signer, iteration) {
                 //solutionNumber = 32
                 //console.log("reveived von ratsler ", JSON.stringify(receivedNumbers))
 
-                if (receivedNumbers.length > 2){
+                if (receivedNumbers.length > 2) {
                     winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
                 }
 
                 if (winnerPeerId !== undefined) {
                     console.log("Winner PeerId and Solution number: " + winnerPeerId + solutionNumber)
-    
+
                     await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-    
+
                     if (winnerPeerId == id) {
                         console.log('Ende von Runde. Nächste Runde ausgelöst')
 
-                        receivedNumbers = undefined
                         writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-                        
+
                         console.log("written Block ")
                         await startSleepThread(++iteration)
-                        return
                     } else {
-    
-                        receivedNumbers = undefined
                         writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-                        ++iteration 
-                        console.log("written Block ")               
+                        ++iteration
+                        console.log("written Block ")
                     }
                 }
 
-                if(winnerPeerId == undefined ){
-                    
-                    receivedNumbers = []
+                if (winnerPeerId == undefined) {
+
                     writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-                    ++iteration 
+                    ++iteration
                     console.log("written Block ")
-                    
+
                 }
-                
+
             }
 
         })
@@ -113,6 +96,20 @@ async function quiz(node, id, signer, iteration) {
     }
 
     async function startSleepThread(iteration) {
+        
+        // listen for messages
+        await node.pubsub.on(topic, async (msg) => {
+            console.log("HELLO from Listener")
+
+            let data = await msg.data
+            let message = uint8ArrayToString(data)
+
+            console.log('received message: ' + message)
+            receivedNumbers.push(message)
+
+            console.log("Array is ", JSON.stringify(receivedNumbers))
+        })
+
 
         // sleep for 15 Minutes until Solution is revealed
         const worker = new Worker('./src/sleep15Minutes.js');
@@ -131,9 +128,11 @@ async function quiz(node, id, signer, iteration) {
 
             console.log(exitCode);
 
+            console.log("MESSAGES ", JSON.stringify(receivedNumbers))
+
             //winnerPeerId = await determineWinner(global.receivedNumbers, solution, id)
-            if(receivedNumbers.length > 1){
-            winnerPeerId = await determineWinner(receivedNumbers, solution, id)
+            if (receivedNumbers.length > 1) {
+                winnerPeerId = await determineWinner(receivedNumbers, solution, id)
             }
 
 
