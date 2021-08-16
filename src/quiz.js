@@ -9,6 +9,8 @@ const { Worker, isMainThread, parentPort, workerData, MessageChannel } = require
 var receivedNumbers = [];
 var winnerPeerId
 var solution
+var randomNumber
+var solutionNumber
 
 
 
@@ -32,7 +34,7 @@ async function quiz(node, id, signer, iteration) {
 
         console.log("NEUES RÄTSEL")
         // generate a random number 
-        let randomNumber = Math.floor(Math.random() * 100).toString();
+        randomNumber = Math.floor(Math.random() * 100).toString();
         console.log('Random number: ' + randomNumber)
 
         await publishRandomNumber(node, randomNumber, id, topic)
@@ -46,15 +48,12 @@ async function quiz(node, id, signer, iteration) {
 
             if (message.includes('Solution')) {
 
-                // auch die eigene Nummer muss mit gegeben werden
-                if (!receivedNumbers.includes(`${id}, ${randomNumber}`)) {
-                    receivedNumbers.push(`${id}, ${randomNumber}`)
-                }
-
                 solutionNumber = message.split('Solution ')[1];
                 //console.log("reveived von ratsler ", JSON.stringify(receivedNumbers))
 
-                if (receivedNumbers.length > 2) {
+                if (receivedNumbers.length > 1) {
+                    // auch die eigene Nummer muss mit gegeben werden
+                    receivedNumbers.push(`${id}, ${randomNumber}`)
                     winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
                 }
 
@@ -105,7 +104,9 @@ async function quiz(node, id, signer, iteration) {
             }
 
             console.log('received message: ' + message)
-            receivedNumbers.push(message)
+            if (!receivedNumbers.includes(`${message}`)) {
+                receivedNumbers.push(message)
+            }
 
             console.log("Array is ", JSON.stringify(receivedNumbers))
 
@@ -179,7 +180,7 @@ async function quiz(node, id, signer, iteration) {
                 await writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined
                 winnerPeerId = undefined
-                await raetsler(++iteration)
+                setTimeout(async () => {await raetsler(++iteration)},3000)
             }
 
         })
