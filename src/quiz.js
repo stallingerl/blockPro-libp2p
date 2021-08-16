@@ -1,8 +1,5 @@
 const { publishRandomNumber } = require('./publishRandomNumber.js');
-//const { startSleepThread } = require('./startSleepThread.js');
 const uint8ArrayToString = require('uint8arrays/to-string');
-const uint8ArrayFromString = require('uint8arrays/from-string');
-
 const { determineWinner } = require('./determineWinner.js')
 const { writeWinnerToLog } = require('./writeWinnerToLog.js');
 const { Worker, isMainThread, parentPort, workerData, MessageChannel } = require('worker_threads')
@@ -25,7 +22,6 @@ async function quiz(node, id, signer, iteration) {
 
     // subscribe to topic Quiz
     await node.pubsub.subscribe(topic)
-    //global.receivedNumbers = ["QmdaiadqcBDCoJ43A5gaomqzUR7dH1NgrGK1xUkUPPkjUi,50", "Qmbu3GkGhjFxBvS2HVZbRggFdyRjzhY5zyD7Pp6sKoGAPb, Solution 12"]
 
     if (signer == true) {
         await startSleepThread(iteration)
@@ -35,18 +31,25 @@ async function quiz(node, id, signer, iteration) {
 
     async function raetsler(iteration) {
 
+        // listen for messages
+        node.pubsub.on(topic, async (msg) => {
+            console.log("HELLO from Listener")
+
+            let data = await msg.data
+            let message = uint8ArrayToString(data)
+
+            console.log('received message: ' + message)
+            receivedNumbers.push(message)
+
+            console.log("Array is ", JSON.stringify(receivedNumbers))
+        })
+
         console.log("NEUES RÄTSEL")
         // generate a random number 
         let randomNumber = Math.floor(Math.random() * 100).toString();
         console.log('Random number: ' + randomNumber)
 
         await publishRandomNumber(node, randomNumber, id, topic)
-
-
-        // node2 publishes "news" every second
-        /*setInterval(() => {
-            node.pubsub.publish(topic, uint8ArrayFromString('Bird bird bird, bird is the word!'))
-        }, 1000)*/
 
         // receive other peers' numbers and save to Array receivedNumbers
         node.pubsub.on(topic, async (msg) => {
@@ -80,6 +83,7 @@ async function quiz(node, id, signer, iteration) {
 
                         writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
 
+                        receivedNumbers = []
                         console.log("written Block ")
                         await startSleepThread(++iteration)
                     } else {
@@ -87,24 +91,25 @@ async function quiz(node, id, signer, iteration) {
                         ++iteration
                         console.log("written Block ")
                         console.log("NEUES RÄTSEL")
+                        receivedNumbers = []
                         // generate a random number 
                         let randomNumber = Math.floor(Math.random() * 100).toString();
                         console.log('Random number: ' + randomNumber)
-                
                         await publishRandomNumber(node, randomNumber, id, topic)
                     }
                 }
 
                 if (winnerPeerId == undefined) {
 
-                    writeWinnerToLog(iteration, winnerPeerId, solutionNumber)               
+                    writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
                     console.log("written Block ")
-                    ++iteration 
+                    ++iteration
+                    receivedNumbers = []
                     console.log("NEUES RÄTSEL")
                     // generate a random number 
                     let randomNumber = Math.floor(Math.random() * 100).toString();
                     console.log('Random number: ' + randomNumber)
-            
+                    
                     await publishRandomNumber(node, randomNumber, id, topic)
 
                 }
@@ -132,9 +137,6 @@ async function quiz(node, id, signer, iteration) {
 
             console.log("Array is ", JSON.stringify(receivedNumbers))
         })
-
-        console.log("Is main thread? ", isMainThread)
-
 
         //Listen for a message from worker
         worker.once("message", (result) => {
