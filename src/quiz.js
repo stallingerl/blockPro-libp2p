@@ -1,6 +1,8 @@
 const { publishRandomNumber } = require('./publishRandomNumber.js');
 //const { startSleepThread } = require('./startSleepThread.js');
 const uint8ArrayToString = require('uint8arrays/to-string');
+const uint8ArrayFromString = require('uint8arrays/from-string');
+
 const { determineWinner } = require('./determineWinner.js')
 const { writeWinnerToLog } = require('./writeWinnerToLog.js');
 const { Worker, isMainThread, parentPort, workerData, MessageChannel } = require('worker_threads')
@@ -40,6 +42,12 @@ async function quiz(node, id, signer, iteration) {
 
         await publishRandomNumber(node, randomNumber, id, topic)
 
+
+        // node2 publishes "news" every second
+        /*setInterval(() => {
+            node.pubsub.publish(topic, uint8ArrayFromString('Bird bird bird, bird is the word!'))
+        }, 1000)*/
+
         // receive other peers' numbers and save to Array receivedNumbers
         node.pubsub.on(topic, async (msg) => {
 
@@ -78,14 +86,26 @@ async function quiz(node, id, signer, iteration) {
                         writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
                         ++iteration
                         console.log("written Block ")
+                        console.log("NEUES RÄTSEL")
+                        // generate a random number 
+                        let randomNumber = Math.floor(Math.random() * 100).toString();
+                        console.log('Random number: ' + randomNumber)
+                
+                        await publishRandomNumber(node, randomNumber, id, topic)
                     }
                 }
 
                 if (winnerPeerId == undefined) {
 
-                    writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-                    ++iteration
+                    writeWinnerToLog(iteration, winnerPeerId, solutionNumber)               
                     console.log("written Block ")
+                    ++iteration 
+                    console.log("NEUES RÄTSEL")
+                    // generate a random number 
+                    let randomNumber = Math.floor(Math.random() * 100).toString();
+                    console.log('Random number: ' + randomNumber)
+            
+                    await publishRandomNumber(node, randomNumber, id, topic)
 
                 }
 
@@ -96,9 +116,12 @@ async function quiz(node, id, signer, iteration) {
     }
 
     async function startSleepThread(iteration) {
-        
+
+        // sleep for 15 Minutes until Solution is revealed
+        const worker = new Worker('./src/sleep15Minutes.js');
+
         // listen for messages
-        await node.pubsub.on(topic, async (msg) => {
+        node.pubsub.on(topic, async (msg) => {
             console.log("HELLO from Listener")
 
             let data = await msg.data
@@ -110,9 +133,8 @@ async function quiz(node, id, signer, iteration) {
             console.log("Array is ", JSON.stringify(receivedNumbers))
         })
 
+        console.log("Is main thread? ", isMainThread)
 
-        // sleep for 15 Minutes until Solution is revealed
-        const worker = new Worker('./src/sleep15Minutes.js');
 
         //Listen for a message from worker
         worker.once("message", (result) => {
@@ -130,7 +152,6 @@ async function quiz(node, id, signer, iteration) {
 
             console.log("MESSAGES ", JSON.stringify(receivedNumbers))
 
-            //winnerPeerId = await determineWinner(global.receivedNumbers, solution, id)
             if (receivedNumbers.length > 1) {
                 winnerPeerId = await determineWinner(receivedNumbers, solution, id)
             }
@@ -163,6 +184,7 @@ async function quiz(node, id, signer, iteration) {
             }
 
         })
+
     }
 }
 
