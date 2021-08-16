@@ -30,18 +30,6 @@ async function quiz(node, id, signer, iteration) {
 
     async function raetsler(iteration) {
 
-        // listen for messages
-        node.pubsub.on(topic, async (msg) => {
-
-            let data = await msg.data
-            let message = uint8ArrayToString(data)
-
-            console.log('received message: ' + message)
-            receivedNumbers.push(message)
-
-            console.log("Array is ", JSON.stringify(receivedNumbers))
-        })
-
         console.log("NEUES RÄTSEL")
         // generate a random number 
         let randomNumber = Math.floor(Math.random() * 100).toString();
@@ -92,7 +80,7 @@ async function quiz(node, id, signer, iteration) {
                         console.log("NEUES RÄTSEL")
                         receivedNumbers = []
                         winnerPeerId = undefined
-                        
+
                         // generate a random number 
                         let randomNumber = Math.floor(Math.random() * 100).toString();
                         console.log('Random number: ' + randomNumber)
@@ -109,12 +97,17 @@ async function quiz(node, id, signer, iteration) {
                     // generate a random number 
                     let randomNumber = Math.floor(Math.random() * 100).toString();
                     console.log('Random number: ' + randomNumber)
-                    
+
                     await publishRandomNumber(node, randomNumber, id, topic)
 
                 }
 
             }
+
+            console.log('received message: ' + message)
+            receivedNumbers.push(message)
+
+            console.log("Array is ", JSON.stringify(receivedNumbers))
 
         })
 
@@ -133,7 +126,10 @@ async function quiz(node, id, signer, iteration) {
             let message = uint8ArrayToString(data)
 
             console.log('received message: ' + message)
-            receivedNumbers.push(message)
+
+            if (!receivedNumbers.includes(`${message}`)) {
+                receivedNumbers.push(message)
+            }
 
             console.log("Array is ", JSON.stringify(receivedNumbers))
         })
@@ -154,8 +150,12 @@ async function quiz(node, id, signer, iteration) {
 
             console.log("MESSAGES ", JSON.stringify(receivedNumbers))
 
+            await publishRandomNumber(node, solution, id, topic)
+            console.log("Published Solution ", solution)
+
             if (receivedNumbers.length > 1) {
-                winnerPeerId = await determineWinner(receivedNumbers, solution, id)
+                let solutionNumber = solution.split(' ')[1]
+                winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
             }
 
 
@@ -164,27 +164,21 @@ async function quiz(node, id, signer, iteration) {
                 winnerPeerId = id
             }
 
-            await writeWinnerToLog(iteration, winnerPeerId, solution)
-
-            await publishRandomNumber(node, solution, id, topic)
-            console.log("Published Solution ", solution)
-
-            //await publishWinner(node, winnerPeerId, topic)
-
-            solution = undefined
-
             console.log("Executed in the worker thread");
+            console.log('Ende von Runde. Nächste Runde ausgelöst')
 
-            if (winnerPeerId == id) {
-                console.log('Ende von Runde. Nächste Runde ausgelöst')
-                receivedNumbers = []
+            randomNumber = undefined
+            receivedNumbers = []
+
+            if (winnerPeerId == id) {       
+                await writeWinnerToLog(iteration, winnerPeerId, solution)
+                solution = undefined
                 winnerPeerId = undefined
-                randomNumber = undefined
                 await startSleepThread(++iteration)
-            } else {
-                receivedNumbers = []
+            } else { 
+                await writeWinnerToLog(iteration, winnerPeerId, solution)
+                solution = undefined
                 winnerPeerId = undefined
-                randomNumber = undefined
                 await raetsler(++iteration)
             }
 

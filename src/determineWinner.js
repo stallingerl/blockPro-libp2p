@@ -1,6 +1,4 @@
   var winnerPeerId
-  var receivedNumbers
-  var solutionNumber
   var diff
   var id
 
@@ -12,7 +10,6 @@ async function determineWinner(receivedNumbers, solutionNumber, id) {
   if (receivedNumbers !== undefined && receivedNumbers.length > 1  ) {
     for (var i = 0; i < receivedNumbers.length ; i++) {
       if (!receivedNumbers[i].includes('Solution')) {
-        console.log('erster Eintrag in array: ' + receivedNumbers[i])
         let number = receivedNumbers[i].split(' ')[1]
 
         diffNeu = Math.abs(solutionNumber - number)
@@ -23,6 +20,7 @@ async function determineWinner(receivedNumbers, solutionNumber, id) {
       }
     }
   }
+  console.log("From Determine Winner WinnerId ", winnerPeerId)
   resolve(winnerPeerId)
   })
 }
