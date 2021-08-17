@@ -51,11 +51,10 @@ async function quiz(node, id, signer, iteration) {
                 solutionNumber = message.split('Solution ')[1];
                 //console.log("reveived von ratsler ", JSON.stringify(receivedNumbers))
 
-                if (receivedNumbers.length > 1) {
-                    // auch die eigene Nummer muss mit gegeben werden
-                    receivedNumbers.push(`${id}, ${randomNumber}`)
-                    winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
-                }
+
+                // auch die eigene Nummer muss mit gegeben werden
+                receivedNumbers.push(`${id}, ${randomNumber}`)
+                winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
 
                 if (winnerPeerId !== undefined) {
                     console.log("Winner PeerId and Solution number: " + winnerPeerId + solutionNumber)
@@ -171,16 +170,16 @@ async function quiz(node, id, signer, iteration) {
             randomNumber = undefined
             receivedNumbers = []
 
-            if (winnerPeerId == id) {       
+            if (winnerPeerId == id) {
                 await writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined
                 winnerPeerId = undefined
                 await startSleepThread(++iteration)
-            } else { 
+            } else {
                 await writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined
                 winnerPeerId = undefined
-                setTimeout(async () => {await raetsler(++iteration)},3000)
+                setTimeout(async () => { await raetsler(++iteration) }, 3000)
             }
 
         })
