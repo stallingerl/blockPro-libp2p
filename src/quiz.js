@@ -11,106 +11,115 @@ var winnerPeerId
 var solution
 var randomNumber
 var solutionNumber
+var ersteRunde
+var rolle
 
 
-
-async function quiz(node, id, signer, iteration) {
+async function quiz(node, id, seed, iteration) {
 
     let topic = "Quiz"
 
-    if (signer == true)
+    if (seed == true)
         console.log('I am SEED now ' + id)
 
     // subscribe to topic Quiz
     await node.pubsub.subscribe(topic)
 
-    if (signer == true) {
-        await startSleepThread(iteration)
+    // Listener
+    await node.pubsub.on(topic, async (msg) => {
+
+        let data = await msg.data
+        let message = uint8ArrayToString(data)
+
+        console.log('received message: ' + message)
+
+        let receivedPeerId = message.split(',')[0]
+        if (!receivedNumbers.includes(`${receivedPeerId}`)) {
+            receivedNumbers.push(message)
+        }
+
+        if (rolle == "rätsler") {
+            raetsler(iteration)
+        }
+
+    })
+
+    if (seed == true) {
+        // listen for messages
+        rolle = "schläfer"
+        startSleepThread(iteration)
     } else {
-        await raetsler(iteration)
+        rolle = "rätsler"
+        console.log("NEUES RÄTSEL")
+        ersteRunde = true
     }
 
     async function raetsler(iteration) {
 
-        console.log("NEUES RÄTSEL")
-        // generate a random number 
-        randomNumber = Math.floor(Math.random() * 100).toString();
-        console.log('Random number: ' + randomNumber)
-
-        await publishRandomNumber(node, randomNumber, id, topic)
-
-        // receive other peers' numbers and save to Array receivedNumbers
-        node.pubsub.on(topic, async (msg) => {
-
-            let data = await msg.data
-            let message = uint8ArrayToString(data)
-
-
-            if (message.includes('Solution')) {
-
-                solutionNumber = message.split('Solution ')[1];
-                //console.log("reveived von ratsler ", JSON.stringify(receivedNumbers))
-
-
-                // auch die eigene Nummer muss mit gegeben werden
-                receivedNumbers.push(`${id}, ${randomNumber}`)
-                winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
-
-                if (winnerPeerId !== undefined) {
-                    console.log("Winner PeerId and Solution number: " + winnerPeerId + solutionNumber)
-
-                    if (winnerPeerId == id) {
-                        console.log('Ende von Runde. Nächste Runde ausgelöst')
-
-                        writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-                        console.log("Was Rätsler now last Signer")
-
-                        receivedNumbers = []
-                        winnerPeerId = undefined
-                        randomNumber = undefined
-
-                        console.log("written Block ")
-                        await startSleepThread(++iteration)
-                    } else {
-                        writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-                        ++iteration
-                        console.log("written Block ")
-                        console.log("NEUES RÄTSEL")
-                        receivedNumbers = []
-                        winnerPeerId = undefined
-
-                        // generate a random number 
-                        let randomNumber = Math.floor(Math.random() * 100).toString();
-                        console.log('Random number: ' + randomNumber)
-                        await publishRandomNumber(node, randomNumber, id, topic)
-                    }
-                } else if (winnerPeerId == undefined) {
-
-                    writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
-                    console.log("written Block ")
-                    ++iteration
-                    receivedNumbers = []
-                    winnerPeerId = undefined
-                    console.log("NEUES RÄTSEL")
-                    // generate a random number 
-                    let randomNumber = Math.floor(Math.random() * 100).toString();
-                    console.log('Random number: ' + randomNumber)
-
-                    await publishRandomNumber(node, randomNumber, id, topic)
-
-                }
-
+        // Wenn die Soltion in den empfangenen Nachrichten ist, Zahl speichern
+        for (var j = 0; j < receivedNumbers.length; j++) {
+            value = receivedNumbers[j].toString();
+            if (value.includes('Solution')) {
+                solutionNumber = value.split('Solution ')[1]
+                break
             }
+        }
 
-            console.log('received message: ' + message)
-            if (!receivedNumbers.includes(`${message}`)) {
-                receivedNumbers.push(message)
+        if (solutionNumber !== undefined && receivedNumbers.length > 1 ) {
+
+            // auch die eigene Nummer muss in den array
+            receivedNumbers.push(`${id}, ${randomNumber}`)
+
+            winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
+            receivedNumbers = []
+            randomNumber = undefined
+
+            console.log("Winner PeerId and Solution number: " + winnerPeerId + ", " + solutionNumber)
+
+            if (winnerPeerId == id) {
+                console.log('Ende von Runde. Nächste Runde ausgelöst')
+
+                await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+                console.log("Was Rätsler now last Signer")
+
+                winnerPeerId = undefined
+                solution = undefined
+                console.log("written Block ")
+                console.log("von Rätsel neuer sleep Thread ")
+                rolle = "schläfer"
+                startSleepThread(++iteration)
+            } else {
+                await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+                ++iteration
+                console.log("written Block ")
+                console.log("von Rätsel NEUES RÄTSEL")
+                solutionNumber = undefined
+                winnerPeerId = undefined
+
+                // generate a random number 
+                randomNumber = Math.floor(Math.random() * 100).toString();
+                console.log('Random number: ' + randomNumber)
+                console.log("HALLO AUS ERSTEM ELSE ICH PUBLISHE")
+                rolle = "rätsler"
+                publishRandomNumber(node, randomNumber, id, topic)
             }
+        } else if (ersteRunde !== undefined && solutionNumber !== undefined) {
+            receivedNumbers = []
 
-            console.log("Array is ", JSON.stringify(receivedNumbers))
+            writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+            solutionNumber = undefined
+            winnerPeerId = undefined
+            ++iteration
+            console.log("written Block ")
 
-        })
-
+            // generate a random number 
+            randomNumber = Math.floor(Math.random() * 100).toString();
+            console.log('Random number: ' + randomNumber)
+            console.log("HALLO AUS ZWEITEM ELSE ICH PUBLISHE")
+            rolle = "rätsler"
+            publishRandomNumber(node, randomNumber, id, topic)
+            ersteRunde = undefined
+        }
     }
 
     async function startSleepThread(iteration) {
@@ -118,21 +127,6 @@ async function quiz(node, id, signer, iteration) {
         // sleep for 15 Minutes until Solution is revealed
         console.log("neuer SLEEP Thread gestartet")
         const worker = new Worker('./src/sleep15Minutes.js');
-
-        // listen for messages
-        node.pubsub.on(topic, async (msg) => {
-
-            let data = await msg.data
-            let message = uint8ArrayToString(data)
-
-            console.log('received message: ' + message)
-
-            if (!receivedNumbers.includes(`${message}`)) {
-                receivedNumbers.push(message)
-            }
-
-            console.log("Array is ", JSON.stringify(receivedNumbers))
-        })
 
         //Listen for a message from worker
         worker.once("message", (result) => {
@@ -150,12 +144,14 @@ async function quiz(node, id, signer, iteration) {
 
             console.log("MESSAGES ", JSON.stringify(receivedNumbers))
 
-            await publishRandomNumber(node, solution, id, topic)
+            // publish solution
+            publishRandomNumber(node, solution, id, topic)
             console.log("Published Solution ", solution)
 
             if (receivedNumbers.length > 1) {
-                let solutionNumber = solution.split(' ')[1]
+                solutionNumber = solution.split(' ')[1]
                 winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
+                solutionNumber = undefined
             }
 
 
@@ -171,15 +167,28 @@ async function quiz(node, id, signer, iteration) {
             receivedNumbers = []
 
             if (winnerPeerId == id) {
-                await writeWinnerToLog(iteration, winnerPeerId, solution)
+                writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined
                 winnerPeerId = undefined
-                await startSleepThread(++iteration)
+                console.log("written Block ")
+                console.log("von sleep thread neuer SLEEP thread")
+                rolle = "schläfer"
+                startSleepThread(++iteration)
             } else {
-                await writeWinnerToLog(iteration, winnerPeerId, solution)
+                writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined
                 winnerPeerId = undefined
-                setTimeout(async () => { await raetsler(++iteration) }, 3000)
+                console.log("written Block ")
+                console.log("von sleep thread NEUES RÄTSEL ")
+
+                console.log("NEUES RÄTSEL")
+                // generate a random number 
+                randomNumber = Math.floor(Math.random() * 100).toString();
+                console.log('Random number: ' + randomNumber)
+
+                rolle = "rätsler"
+                ++iteration
+                publishRandomNumber(node, randomNumber, id, topic)
             }
 
         })

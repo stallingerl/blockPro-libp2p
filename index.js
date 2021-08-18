@@ -7,7 +7,7 @@ var peerIdConf
 var id
 var node
 var iteration
-var signer
+var seed
 
 async function main() {
 
@@ -25,11 +25,11 @@ async function main() {
 
   async function getWinnerPeerId() {
     if (peerIdConf.includes('id-1')) {
-      signer = true
-      await quiz(node, id, signer, iteration)
+      seed = true
+      await quiz(node, id, seed, iteration)
     } else {
-      signer = false
-      await quiz(node, id, signer, iteration)
+      seed = false
+      await quiz(node, id, seed, iteration)
     }
   }
 
