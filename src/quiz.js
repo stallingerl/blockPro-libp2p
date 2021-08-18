@@ -72,6 +72,7 @@ async function quiz(node, id, seed) {
             // auch die eigene Nummer muss in den array
             receivedNumbers.push(`${id}, ${randomNumber}`)
 
+            winnerPeerId = undefined
             winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
             randomNumber = undefined
             receivedNumbers = []
@@ -154,6 +155,7 @@ async function quiz(node, id, seed) {
 
             if (receivedNumbers.length > 1) {
                 solutionNumber = solution.split(' ')[1]
+                winnerPeerId = undefined
                 winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
                 solutionNumber = undefined
             }
