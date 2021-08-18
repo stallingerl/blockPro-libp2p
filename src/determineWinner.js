@@ -5,7 +5,7 @@
 async function determineWinner(receivedNumbers, solutionNumber, id) {
   return new Promise(resolve => {
 
-    console.log("Array is in determine Winner ", JSON.stringify(receivedNumbers))
+  console.log("Array is in determine Winner ", JSON.stringify(receivedNumbers))
 
 
   if (receivedNumbers !== undefined && receivedNumbers.length > 1  ) {
@@ -22,6 +22,7 @@ async function determineWinner(receivedNumbers, solutionNumber, id) {
     }
   }
   console.log("From Determine Winner WinnerId ", winnerPeerId)
+  receivedNumbers = []
   resolve(winnerPeerId)
   })
 }

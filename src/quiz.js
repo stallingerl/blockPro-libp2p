@@ -6,6 +6,7 @@ const { Worker, isMainThread, parentPort, workerData, MessageChannel } = require
 
 
 // This function is for the Quizmaster who sets the hidden number
+var iteration
 var receivedNumbers = [];
 var winnerPeerId
 var solution
@@ -15,9 +16,10 @@ var ersteRunde
 var rolle
 
 
-async function quiz(node, id, seed, iteration) {
+async function quiz(node, id, seed) {
 
     let topic = "Quiz"
+    iteration = 0
 
     if (seed == true)
         console.log('I am SEED now ' + id)
@@ -39,7 +41,7 @@ async function quiz(node, id, seed, iteration) {
         }
 
         if (rolle == "rätsler") {
-            raetsler(iteration)
+            raetsler()
         }
 
     })
@@ -54,7 +56,7 @@ async function quiz(node, id, seed, iteration) {
         ersteRunde = true
     }
 
-    async function raetsler(iteration) {
+    async function raetsler() {
 
         // Wenn die Soltion in den empfangenen Nachrichten ist, Zahl speichern
         for (var j = 0; j < receivedNumbers.length; j++) {
@@ -71,15 +73,15 @@ async function quiz(node, id, seed, iteration) {
             receivedNumbers.push(`${id}, ${randomNumber}`)
 
             winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
-            receivedNumbers = []
             randomNumber = undefined
-
+            receivedNumbers = []
+            
             console.log("Winner PeerId and Solution number: " + winnerPeerId + ", " + solutionNumber)
 
             if (winnerPeerId == id) {
                 console.log('Ende von Runde. Nächste Runde ausgelöst')
 
-                await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+                writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
                 console.log("Was Rätsler now last Signer")
 
                 winnerPeerId = undefined
@@ -87,10 +89,11 @@ async function quiz(node, id, seed, iteration) {
                 console.log("written Block ")
                 console.log("von Rätsel neuer sleep Thread ")
                 rolle = "schläfer"
-                startSleepThread(++iteration)
-            } else {
-                await writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
                 ++iteration
+                startSleepThread()
+            } else {
+                writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
+
                 console.log("written Block ")
                 console.log("von Rätsel NEUES RÄTSEL")
                 solutionNumber = undefined
@@ -101,6 +104,7 @@ async function quiz(node, id, seed, iteration) {
                 console.log('Random number: ' + randomNumber)
                 console.log("HALLO AUS ERSTEM ELSE ICH PUBLISHE")
                 rolle = "rätsler"
+                ++iteration
                 publishRandomNumber(node, randomNumber, id, topic)
             }
         } else if (ersteRunde !== undefined && solutionNumber !== undefined) {
@@ -122,7 +126,7 @@ async function quiz(node, id, seed, iteration) {
         }
     }
 
-    async function startSleepThread(iteration) {
+    async function startSleepThread() {
 
         // sleep for 15 Minutes until Solution is revealed
         console.log("neuer SLEEP Thread gestartet")
@@ -160,11 +164,11 @@ async function quiz(node, id, seed, iteration) {
                 winnerPeerId = id
             }
 
-            console.log("Executed in the worker thread");
-            console.log('Ende von Runde. Nächste Runde ausgelöst')
-
             randomNumber = undefined
             receivedNumbers = []
+
+            console.log("Executed in the worker thread");
+            console.log('Ende von Runde. Nächste Runde ausgelöst')
 
             if (winnerPeerId == id) {
                 writeWinnerToLog(iteration, winnerPeerId, solution)
@@ -173,7 +177,8 @@ async function quiz(node, id, seed, iteration) {
                 console.log("written Block ")
                 console.log("von sleep thread neuer SLEEP thread")
                 rolle = "schläfer"
-                startSleepThread(++iteration)
+                ++iteration
+                startSleepThread()
             } else {
                 writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined

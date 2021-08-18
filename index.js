@@ -6,7 +6,6 @@ const { quiz } = require('./src/quiz.js')
 var peerIdConf
 var id
 var node
-var iteration
 var seed
 
 async function main() {
@@ -21,15 +20,14 @@ async function main() {
 
   id = id.toB58String()
 
-  iteration = 0;
 
   async function getWinnerPeerId() {
     if (peerIdConf.includes('id-1')) {
       seed = true
-      await quiz(node, id, seed, iteration)
+      await quiz(node, id, seed)
     } else {
       seed = false
-      await quiz(node, id, seed, iteration)
+      await quiz(node, id, seed)
     }
   }
 
