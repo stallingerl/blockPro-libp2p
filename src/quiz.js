@@ -72,8 +72,8 @@ async function quiz(node, id, seed) {
             // auch die eigene Nummer muss in den array
             receivedNumbers.push(`${id}, ${randomNumber}`)
 
-            winnerPeerId = undefined
             winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
+
             randomNumber = undefined
             receivedNumbers = []
             
@@ -85,7 +85,6 @@ async function quiz(node, id, seed) {
                 writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
                 console.log("Was Rätsler now last Signer")
 
-                winnerPeerId = undefined
                 solution = undefined
                 console.log("written Block ")
                 console.log("von Rätsel neuer sleep Thread ")
@@ -98,10 +97,9 @@ async function quiz(node, id, seed) {
                 console.log("written Block ")
                 console.log("von Rätsel NEUES RÄTSEL")
                 solutionNumber = undefined
-                winnerPeerId = undefined
 
                 // generate a random number 
-                randomNumber = Math.floor(Math.random() * 100).toString();
+                randomNumber = Math.floor(Math.random() * 300).toString();
                 console.log('Random number: ' + randomNumber)
                 console.log("HALLO AUS ERSTEM ELSE ICH PUBLISHE")
                 rolle = "rätsler"
@@ -113,12 +111,11 @@ async function quiz(node, id, seed) {
 
             writeWinnerToLog(iteration, winnerPeerId, solutionNumber)
             solutionNumber = undefined
-            winnerPeerId = undefined
             ++iteration
             console.log("written Block ")
 
             // generate a random number 
-            randomNumber = Math.floor(Math.random() * 100).toString();
+            randomNumber = Math.floor(Math.random() * 300).toString();
             console.log('Random number: ' + randomNumber)
             console.log("HALLO AUS ZWEITEM ELSE ICH PUBLISHE")
             rolle = "rätsler"
@@ -155,7 +152,6 @@ async function quiz(node, id, seed) {
 
             if (receivedNumbers.length > 1) {
                 solutionNumber = solution.split(' ')[1]
-                winnerPeerId = undefined
                 winnerPeerId = await determineWinner(receivedNumbers, solutionNumber, id)
                 solutionNumber = undefined
             }
@@ -175,7 +171,6 @@ async function quiz(node, id, seed) {
             if (winnerPeerId == id) {
                 writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined
-                winnerPeerId = undefined
                 console.log("written Block ")
                 console.log("von sleep thread neuer SLEEP thread")
                 rolle = "schläfer"
@@ -184,13 +179,12 @@ async function quiz(node, id, seed) {
             } else {
                 writeWinnerToLog(iteration, winnerPeerId, solution)
                 solution = undefined
-                winnerPeerId = undefined
                 console.log("written Block ")
                 console.log("von sleep thread NEUES RÄTSEL ")
 
                 console.log("NEUES RÄTSEL")
                 // generate a random number 
-                randomNumber = Math.floor(Math.random() * 100).toString();
+                randomNumber = Math.floor(Math.random() * 300).toString();
                 console.log('Random number: ' + randomNumber)
 
                 rolle = "rätsler"
